@@ -1,0 +1,30 @@
+type iptablesRule {
+  line: String,
+  packets: String,
+  bytes: String,
+  target: String,
+  protocol: String,
+  opt: String,
+  in: String,
+  out: String,
+  src: String,
+  dst: String,
+  dpt: String,
+  to: String,
+  comment: String,
+  raw: String
+}
+
+"""Read only queries"""
+type Query {
+  """Gives some information about this application."""
+  info: String!
+  """List of iptables rules"""
+  iptablesRules: [iptablesRule!]!
+}
+
+"""Web socket updates"""
+type Subscription {
+  """to get polled iptables updates."""
+  iptablesUpdate: String
+}

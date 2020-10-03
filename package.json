@@ -1,0 +1,44 @@
+{
+  "name": "edge-nat",
+  "version": "0.0.0",
+  "description": "iptables REST API",
+  "main": "src/index.js",
+  "dependencies": {
+    "apollo-server-express": "^2.18.1",
+    "express": "^4.17.1",
+    "lazy": "^1.0.11",
+    "make-promises-safe": "^5.1.0",
+    "nodemon": "^2.0.4"
+  },
+  "devDependencies": {
+    "coveralls": "^3.1.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-jest": "^24.0.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^26.4.2",
+    "jest-watch-select-projects": "^2.0.0",
+    "jest-watch-typeahead": "^0.6.1",
+    "prettier": "^2.1.2"
+  },
+  "scripts": {
+    "test": "jest --watchAll",
+    "dev": "NODE_ENV=development nodemon ./index.js -e js,graphql --watch src",
+    "test:ci": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joyja/edge-nat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joyja/edge-nat/issues"
+  },
+  "homepage": "https://github.com/joyja/edge-nat#readme"
+}
