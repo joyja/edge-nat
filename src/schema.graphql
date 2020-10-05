@@ -1,4 +1,19 @@
-type iptablesRule {
+type NetworkInterfaceConfig {
+  name: String,
+  dhcp4: Boolean,
+  addresses: [String!],
+  gateway4: String
+}
+
+type NetworkInterface {
+  id: String,
+  name: String,
+  mtu: String,
+  state: String
+  ipAddresses: [String!]!
+}
+
+type IptablesRule {
   line: String,
   packets: String,
   bytes: String,
@@ -20,7 +35,11 @@ type Query {
   """Gives some information about this application."""
   info: String!
   """List of iptables rules"""
-  iptablesRules: [iptablesRule!]!
+  iptablesRules: [IptablesRule!]!
+  """List of network interfaces"""
+  networkInterfaces: [NetworkInterface!]!
+  """List of network interface configurations"""
+  networkInterfaceConfigs: [NetworkInterfaceConfig!]!
 }
 
 """Web socket updates"""

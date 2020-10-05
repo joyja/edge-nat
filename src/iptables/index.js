@@ -1,4 +1,4 @@
-var { exec, spawn } = require('child_process')
+const { exec, spawn } = require('child_process')
 
 const getRules = async function () {
   return new Promise((resolve, reject) => {
@@ -20,7 +20,7 @@ const getRules = async function () {
               .substring(raw.lastIndexOf('to:'), raw.length)
               .replace('to:', '')
 
-            const fields = raw.split(/\s+/, 9)
+            const fields = raw.split(/\s+/, 10)
 
             return {
               line: fields[0],
