@@ -24,6 +24,8 @@ start = async function () {
       requests: req,
       pubsub,
     }),
+    introspection: true,
+    playground: true,
   })
   graphqlServer.applyMiddleware({ app, path: '/' })
 
