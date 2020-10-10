@@ -51,8 +51,8 @@ const getDefaultRoutes = async function () {
 const getInterfaces = async function () {
   return new Promise((resolve, reject) => {
     exec('ip addr show', (err, stdout, stderr) => {
-      const eth1identifier = `${process.env.ETH1NAME}@`
-      const eth2identifier = `${process.env.ETH2NAME}@`
+      const eth1identifier = `${process.env.ETH1NAME}`
+      const eth2identifier = `${process.env.ETH2NAME}`
       const interfaces = stdout
         .split('\n') //split into members by newline
         .filter(String) //Only get valid strings
