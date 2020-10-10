@@ -16,7 +16,7 @@ module.exports = {
       repo: 'https://github.com/joyja/edge-nat.git',
       path: '/root/edge-nat',
       'post-deploy':
-        'npm install && pm2 startOrRestart ecosystem.config.js --env production',
+        'sudo npm install && sudo pm2 startOrRestart ecosystem.config.js --env production',
     },
   },
 }
