@@ -65,7 +65,7 @@ const getInterfaces = async function () {
         .map((line) => {
           const raw = line.trim()
           const fields = raw.split(/\s+/)
-          let alias = fields[1].split('@')[0]
+          let alias = fields[1].split('@')[0].replace(':', '')
           if (line.includes(eth1identifier)) {
             alias = process.env.ETH1ALIAS
           } else if (line.includes(eth2identifier)) {
@@ -73,7 +73,7 @@ const getInterfaces = async function () {
           }
           return {
             id: fields[0].replace(':', ''),
-            name: fields[1].split('@')[0],
+            name: fields[1].split('@')[0].replace(':', ''),
             alias,
             mtu: fields[4],
             state: fields[8],
