@@ -1,12 +1,22 @@
 const iptables = require('../../iptables')
 const network = require('../../network')
 
-const iptablesRules = async function (root, args, context, info) {
+const natRules = async function (root, args, context, info) {
   return iptables.getRules()
 }
 
 const networkInterfaces = async function (root, args, context, info) {
-  return network.getInterfaces()
+  const ifaces = await network.getInterfaces()
+  const defaultRoutes = await network.getDefaultRoutes()
+  return ifaces.map((iface) => {
+    const defaultRoute = defaultRoutes.find(
+      (route) => route.interface === iface.name
+    )
+    return {
+      ...iface,
+      gateway: defaultRoute ? defaultRoute.gateway : null,
+    }
+  })
 }
 
 const networkInterfaceConfigs = async function (root, args, context, info) {
@@ -22,7 +32,7 @@ const networkInterfaceConfigs = async function (root, args, context, info) {
 
 module.exports = {
   info: () => `This is an Edge NAT appliance based on iptables.`,
-  iptablesRules,
+  natRules,
   networkInterfaces,
   networkInterfaceConfigs,
 }

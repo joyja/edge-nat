@@ -8,26 +8,24 @@ type NetworkInterfaceConfig {
 type NetworkInterface {
   id: String,
   name: String,
+  alias: String,
   mtu: String,
   state: String
   ipAddresses: [String!]!
+  gateway: String
 }
 
-type IptablesRule {
-  line: String,
-  packets: String,
-  bytes: String,
-  target: String,
-  protocol: String,
-  opt: String,
-  in: String,
-  out: String,
-  src: String,
-  dst: String,
-  dpt: String,
-  to: String,
-  comment: String,
-  raw: String
+type NatRule {
+  """iptables SNAT rule line number. Null if DNAT only."""
+  snatLine: Int
+  """iptables DNAT rule line number."""
+  dnatLine: Int!
+  """incoming destination address to which to apply the DNAT rule."""
+  incomingDestAddress: String!
+  """outgoing source address that will be applied via SNAT to the DNAT packets (optional)."""
+  outgoingSourceAddress: String
+  """outgoing destination address that the DNAT packets will be sent to."""
+  outgoingDestAddress: String!
 }
 
 """Read only queries"""
@@ -35,11 +33,30 @@ type Query {
   """Gives some information about this application."""
   info: String!
   """List of iptables rules"""
-  iptablesRules: [IptablesRule!]!
+  natRules: [NatRule!]!
   """List of network interfaces"""
   networkInterfaces: [NetworkInterface!]!
   """List of network interface configurations"""
   networkInterfaceConfigs: [NetworkInterfaceConfig!]!
+}
+
+"""Write requests"""
+type Mutation {
+  createRule(
+    incomingDestAddress: String!
+    outgoingSourceAddress: String
+    outgoingDestAddress: String!
+  ): NatRule
+  deleteRule(
+    dnatLine: Int!
+    snatLine: Int
+  ): NatRule
+  setInterfaceConfig(
+    name: String!,
+    dhcp: Boolean!,
+    addresses: [String!]!
+    gateway: String  
+  ): NetworkInterface
 }
 
 """Web socket updates"""

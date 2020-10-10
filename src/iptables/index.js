@@ -1,9 +1,12 @@
 const { exec, spawn } = require('child_process')
+const isCidr = require('is-cidr')
+const isIp = require('is-ip')
+const { isIPv4 } = require('net')
 
-const getRules = async function () {
+const getLines = async function (chain) {
   return new Promise((resolve, reject) => {
     exec(
-      'sudo iptables -t nat -L PREROUTING -n -v --line-numbers',
+      `sudo iptables -t nat -L ${chain} -n -v --line-numbers`,
       (err, stdout, stderr) => {
         const lines = stdout
           .split('\n')
@@ -44,33 +47,100 @@ const getRules = async function () {
         resolve(lines)
       }
     )
-
-    // const lazy = new Lazy(iptablesExec.stdout)
-    //   .lines
-    //   .map(String)
-    //   .skip(2) // skips the two lines that are iptables header
-    //   .map(function (line) {
-    //       // packets, bytes, target, pro, opt, in, out, src, dst, opts
-    //       var fields = line.trim().split(/\s+/, 9);
-    //       return {
-    //         packets : fields[0],
-    //         bytes : fields[1],
-    //         target : fields[2],
-    //         protocol : fields[3],
-    //         opt : fields[4],
-    //         in : fields[5],
-    //         out : fields[6],
-    //         src : fields[7],
-    //         dst : fields[8],
-    //         raw : line.trim()
-    //       }
-    //   })
-    //   .join((result) => {
-    //     resolve(result)
-    //   })
   })
+}
+
+const getRules = async function () {
+  const dnat = await getLines('PREROUTING')
+  const snat = await getLines('POSTROUTING')
+  return dnat.map((dLine) => {
+    const sLine = snat.find((sLine) => {
+      return sLine.dst === dLine.to
+    })
+    return {
+      dnatLine: dLine.line,
+      snatLine: sLine ? sLine.line : null,
+      incomingDestAddress: dLine.dst,
+      outgoingDestAddress: dLine.to,
+      outgoingSourceAddress: sLine ? sLine.to : null,
+    }
+  })
+}
+
+const createRule = async function ({
+  incomingDestAddress,
+  outgoingSourceAddress,
+  outgoingDestAddress,
+}) {
+  if (!isIPv4(incomingDestAddress)) {
+    throw new Error(
+      `The incoming source address ${incomingDestAddress} is not a valid IP Address.`
+    )
+  }
+  if (!isIPv4(outgoingDestAddress)) {
+    throw new Error(
+      `The outgoing destination address ${outgoingDestAddress} is not a valid IP Address.`
+    )
+  }
+  await new Promise((resolve, reject) => {
+    exec(
+      `sudo iptables -t nat -A PREROUTING -d ${incomingDestAddress} -j DNAT --to-destination ${outgoingDestAddress}`,
+      () => {
+        resolve()
+      }
+    )
+  })
+  if (outgoingSourceAddress) {
+    if (!isIPv4(outgoingSourceAddress)) {
+      throw new Error(
+        `There is an outgoing source address ${outgoingSourceAddress}, but it not a valid IP Address.`
+      )
+    }
+    await new Promise((resolve, reject) => {
+      exec(
+        `sudo iptables -t nat -A POSTROUTING -d ${outgoingDestAddress} -j SNAT --to-source ${outgoingSourceAddress}`,
+        () => {
+          resolve()
+        }
+      )
+    })
+  }
+  const rules = await getRules()
+  return rules.find((rule) => {
+    return (
+      rule.incomingDestAddress === incomingDestAddress &&
+      rule.outgoingSourceAddress === outgoingSourceAddress &&
+      rule.outgoingDestAddress === outgoingDestAddress
+    )
+  })
+}
+
+deleteRule = async function ({ dnatLine, snatLine }) {
+  const oldRules = await getRules()
+  const deletedRule = oldRules.find((rule) => {
+    if (snatLine) {
+      return rule.snatLine === snatLine && rule.dnatLine === dnatLine
+    } else {
+      return rule.dnatLine === dnatLine
+    }
+  })
+  await new Promise((resolve, reject) => {
+    exec(`sudo iptables -t nat -D PREROUTING ${dnatLine}`, () => {
+      resolve()
+    })
+  })
+  if (snatLine) {
+    await new Promise((resolve, reject) => {
+      exec(`sudo iptables -t nat -D POSTROUTING ${snatLine}`, () => {
+        resolve()
+      })
+    })
+  }
+  return deletedRule
 }
 
 module.exports = {
   getRules,
+  createRule,
+  deleteRule,
 }
