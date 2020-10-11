@@ -99,6 +99,13 @@ const getInterfaces = async function () {
             ) {
               const fields = line.trim().split(/\s+/)
               ipAddresses.push(fields[1])
+            } else if (
+              lineReached &&
+              line.startsWith('') &&
+              line.includes('link/ether')
+            ) {
+              const fields = line.trim().split(/\s+/)
+              interfaces[index].macAddress = fields[1]
             } else if (lineReached && !line.startsWith(' ')) {
               lineReached = false
             }

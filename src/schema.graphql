@@ -1,16 +1,17 @@
 type NetworkInterfaceConfig {
-  name: String,
-  dhcp4: Boolean,
-  addresses: [String!],
+  name: String
+  dhcp4: Boolean
+  addresses: [String!]
   gateway4: String
 }
 
 type NetworkInterface {
-  id: String,
-  name: String,
-  alias: String,
-  mtu: String,
+  id: String
+  name: String
+  alias: String
+  mtu: String
   state: String
+  macAddress: String
   ipAddresses: [String!]!
   gateway: String
 }
