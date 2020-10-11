@@ -8,6 +8,7 @@ const app = express()
 
 let httpServer = undefined
 let graphqlServer = undefined
+let listenHost = process.env.EDGENAT_GRAPHQL_HOST || 'localhost'
 
 start = async function () {
   const pubsub = new PubSub()
@@ -33,7 +34,7 @@ start = async function () {
   graphqlServer.installSubscriptionHandlers(httpServer)
 
   await new Promise(async (resolve, reject) => {
-    httpServer.listen(4000, async () => {
+    httpServer.listen(4000, listenHost, async () => {
       resolve()
     })
   })
