@@ -3,12 +3,14 @@ const express = require('express')
 const { ApolloServer, PubSub, gql } = require('apollo-server-express')
 const resolvers = require('./resolvers')
 const fs = require('fs')
+const { deployUpdateStatus } = require('./pm2')
 
 const app = express()
 
 let httpServer = undefined
 let graphqlServer = undefined
 let listenHost = process.env.EDGENAT_GRAPHQL_HOST || 'localhost'
+let listenPort = process.env.EDGENAT_GRAPHQL_PORT || 4000
 
 start = async function () {
   const pubsub = new PubSub()
@@ -24,6 +26,7 @@ start = async function () {
       ...req,
       requests: req,
       pubsub,
+      deployUpdateStatus,
     }),
     introspection: true,
     playground: true,
@@ -34,7 +37,7 @@ start = async function () {
   graphqlServer.installSubscriptionHandlers(httpServer)
 
   await new Promise(async (resolve, reject) => {
-    httpServer.listen(4000, listenHost, async () => {
+    httpServer.listen(listenPort, listenHost, async () => {
       resolve()
     })
   })

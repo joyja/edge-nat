@@ -1,3 +1,5 @@
+scalar Datetime
+
 type NetworkInterfaceConfig {
   name: String
   dhcp4: Boolean
@@ -14,6 +16,12 @@ type NetworkInterface {
   macAddress: String
   ipAddresses: [String!]!
   gateway: String
+}
+
+type DeployUpdateStatus {
+  progress: Int
+  lastUpdateAt: Datetime
+  error: String
 }
 
 type NatRule {
@@ -39,6 +47,7 @@ type Query {
   networkInterfaces: [NetworkInterface!]!
   """List of network interface configurations"""
   networkInterfaceConfigs: [NetworkInterfaceConfig!]!
+  deployUpdateStatus: DeployUpdateStatus
 }
 
 """Write requests"""
@@ -58,10 +67,12 @@ type Mutation {
     addresses: [String!]!
     gateway: String  
   ): NetworkInterface
+  deployUpdate: DeployUpdateStatus
 }
 
 """Web socket updates"""
 type Subscription {
   """to get polled iptables updates."""
   iptablesUpdate: String
+  deployUpdateStatus: DeployUpdateStatus
 }

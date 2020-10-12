@@ -30,9 +30,14 @@ const networkInterfaceConfigs = async function (root, args, context, info) {
   return result
 }
 
+const deployUpdateStatus = function (root, args, context, info) {
+  return context.deployUpdateStatus
+}
+
 module.exports = {
   info: () => `This is an Edge NAT appliance based on iptables.`,
   natRules,
   networkInterfaces,
   networkInterfaceConfigs,
+  deployUpdateStatus,
 }

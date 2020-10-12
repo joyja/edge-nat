@@ -1,6 +1,7 @@
 const { resolveConfig } = require('prettier')
 const network = require('../../network')
 const iptables = require('../../iptables')
+const pm2 = require('../../pm2')
 
 const createRule = async function (root, args, context, info) {
   return iptables.createRule(args)
@@ -31,8 +32,13 @@ const setInterfaceConfig = async function (root, args, context, info) {
   }
 }
 
+const deployUpdate = async function (root, args, context, info) {
+  return pm2.deployUpdate(context)
+}
+
 module.exports = {
   createRule,
   deleteRule,
   setInterfaceConfig,
+  deployUpdate,
 }
