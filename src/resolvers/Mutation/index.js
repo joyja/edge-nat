@@ -32,13 +32,8 @@ const setInterfaceConfig = async function (root, args, context, info) {
   }
 }
 
-const deployUpdate = async function (root, args, context, info) {
-  return pm2.deployUpdate(context)
-}
-
 module.exports = {
   createRule,
   deleteRule,
   setInterfaceConfig,
-  deployUpdate,
 }

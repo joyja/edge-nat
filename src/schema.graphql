@@ -18,12 +18,6 @@ type NetworkInterface {
   gateway: String
 }
 
-type DeployUpdateStatus {
-  progress: Int
-  lastUpdateAt: Datetime
-  error: String
-}
-
 type NatRule {
   """iptables SNAT rule line number. Null if DNAT only."""
   snatLine: Int
@@ -47,7 +41,6 @@ type Query {
   networkInterfaces: [NetworkInterface!]!
   """List of network interface configurations"""
   networkInterfaceConfigs: [NetworkInterfaceConfig!]!
-  deployUpdateStatus: DeployUpdateStatus
 }
 
 """Write requests"""
@@ -67,12 +60,10 @@ type Mutation {
     addresses: [String!]!
     gateway: String  
   ): NetworkInterface
-  deployUpdate: DeployUpdateStatus
 }
 
 """Web socket updates"""
 type Subscription {
   """to get polled iptables updates."""
   iptablesUpdate: String
-  deployUpdateStatus: DeployUpdateStatus
 }

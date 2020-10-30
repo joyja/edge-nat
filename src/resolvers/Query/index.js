@@ -21,17 +21,15 @@ const networkInterfaces = async function (root, args, context, info) {
 
 const networkInterfaceConfigs = async function (root, args, context, info) {
   const config = network.getConfig()[0]
+  console.log(config.contents.network.ethernets)
   const result = Object.keys(config.contents.network.ethernets).map((key) => {
     return {
       name: key,
       ...config.contents.network.ethernets[key],
+      addresses: config.contents.network.ethernets[key].addresses || [],
     }
   })
   return result
-}
-
-const deployUpdateStatus = function (root, args, context, info) {
-  return context.deployUpdateStatus
 }
 
 module.exports = {
@@ -39,5 +37,4 @@ module.exports = {
   natRules,
   networkInterfaces,
   networkInterfaceConfigs,
-  deployUpdateStatus,
 }
