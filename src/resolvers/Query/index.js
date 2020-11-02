@@ -21,7 +21,6 @@ const networkInterfaces = async function (root, args, context, info) {
 
 const networkInterfaceConfigs = async function (root, args, context, info) {
   const config = network.getConfig()[0]
-  console.log(config.contents.network.ethernets)
   const result = Object.keys(config.contents.network.ethernets).map((key) => {
     return {
       name: key,
